@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>masroofy.</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <nav class="topbar hidden" id="topbar">
+        <div class="topbar-logo">masroofy<span class="logo-dot">.</span></div>
+        <div class="topbar-nav">
+          <button class="nav-item" data-target="dashboard">Dashboard</button>
+          <button class="nav-item" data-target="log">Log expense</button>
+          <button class="nav-item" data-target="history">History</button>
+          <button class="nav-item" data-target="settings">Settings</button>
+        </div>
+        <div class="topbar-right">
+          <div class="user-avatar" id="nav-avatar">YA</div>
+          <span class="user-name" id="nav-username">Yamen</span>
+        </div>
+      </nav>
+
+      <aside class="sidebar hidden" id="main-sidebar"></aside>
+
+      <main class="main-content">
+        <section id="login-screen" class="screen">
+          <div class="auth-wrapper">
+            <div class="logo">masroofy<span class="logo-accent">.</span></div>
+            <p class="subtitle">Welcome back. Please log in.</p>
+            <form id="login-form" class="dark-form">
+              <div class="form-group">
+                <label>Email</label>
+                <input
+                  type="text"
+                  id="login-email"
+                  placeholder="Enter Email"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  id="login-password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn-primary" style="margin-top: 4px">
+                Log In
+              </button>
+              <p
+                style="
+                  text-align: center;
+                  color: var(--text-muted);
+                  font-size: 14px;
+                "
+              >
+                Don't have an account?
+                <a href="#" id="go-to-signup" class="text-link">Sign up</a>
+              </p>
+            </form>
+          </div>
+        </section>
+
+        <section id="signup-screen" class="screen hidden">
+          <div class="auth-wrapper">
+            <div class="logo">masroofy<span class="logo-accent">.</span></div>
+            <p class="subtitle">Create a new account.</p>
+            <form id="signup-form" class="dark-form">
+              <div class="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  id="signup-email"
+                  placeholder="you@example.com"
+                  required
+                />
+                <span
+                  id="email-msg"
+                  style="color: #cc3333; font-size: 12px; display: none"
+                ></span>
+              </div>
+              <div class="form-group">
+                <label>Username</label>
+                <input
+                  type="text"
+                  id="signup-username"
+                  placeholder="Choose a username"
+                  required
+                />
+                <span
+                  id="username-msg"
+                  style="color: #cc3333; font-size: 12px; display: none"
+                ></span>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  id="signup-password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Create a 4-Digit PIN</label>
+                <input
+                  type="password"
+                  id="signup-pin"
+                  maxlength="4"
+                  placeholder="****"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn-primary" style="margin-top: 4px">
+                Create Account
+              </button>
+              <p
+                style="
+                  text-align: center;
+                  color: var(--text-muted);
+                  font-size: 14px;
+                "
+              >
+                Already have an account?
+                <a href="#" id="go-to-login" class="text-link">Log in</a>
+              </p>
+            </form>
+          </div>
+        </section>
+
+        <section id="lock-screen" class="screen hidden">
+          <div class="auth-wrapper">
+            <div class="logo">masroofy<span class="logo-accent">.</span></div>
+            <p class="subtitle">
+              Welcome back,
+              <span
+                id="welcome-username"
+                style="color: var(--text-main); font-weight: 700"
+                >User</span
+              >!
+            </p>
+            <p class="subtitle" style="margin-top: -18px">
+              Enter your PIN to unlock.
+            </p>
+            <form id="pin-login-form" class="dark-form">
+              <input
+                type="password"
+                id="unlock-pin"
+                maxlength="4"
+                placeholder="****"
+                required
+                style="
+                  text-align: center;
+                  font-size: 32px;
+                  letter-spacing: 16px;
+                "
+              />
+              <button type="submit" class="btn-primary">Unlock</button>
+              <p
+                style="
+                  text-align: center;
+                  color: var(--text-muted);
+                  font-size: 14px;
+                "
+              >
+                Not you?
+                <a href="#" id="switch-account" class="text-link"
+                  >Switch account</a
+                >
+              </p>
+            </form>
+          </div>
+        </section>
+
+        <section id="dashboard" class="screen hidden">
+          <header style="margin-bottom: 20px">
+            <h1 id="dashboard-cycle-title">Dashboard</h1>
+          </header>
+          <div id="warning-banner" class="warning-banner hidden"></div>
+
+          <div class="dashboard-stats">
+            <div class="stat-card" id="stat-daily">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-start;
+                  margin-bottom: 8px;
+                "
+              >
+                <div class="stat-label" style="margin-bottom: 0">
+                  Daily budget left
+                </div>
+                <div
+                  id="daily-limit-target"
+                  style="
+                    color: var(--brand-accent);
+                    font-size: 13px;
+                    font-weight: 700;
+                  "
+                ></div>
+              </div>
+              <div class="stat-value" id="daily-limit-display">0 EGP</div>
+              <div class="stat-sub" id="daily-limit-sub">for today</div>
+              <div class="spend-bar-wrap">
+                <div class="spend-bar-track">
+                  <div
+                    class="spend-bar-fill"
+                    id="daily-bar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-card" id="stat-remaining">
+              <div class="stat-label">Total remaining</div>
+              <div class="stat-value" id="remaining-balance-display">0 EGP</div>
+              <div class="stat-sub" id="allowance-display">of 0 EGP</div>
+              <div class="spend-bar-wrap">
+                <div class="spend-bar-track">
+                  <div
+                    class="spend-bar-fill"
+                    id="balance-bar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-card" id="stat-days">
+              <div class="stat-label">Days remaining</div>
+              <div class="stat-value white" id="days-remaining-display">0</div>
+              <div class="stat-sub" id="cycle-dates-display">
+                No active cycle
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-lower">
+            <div class="card donut-card">
+              <div class="card-title">Spending breakdown</div>
+              <div class="donut-wrap">
+                <svg
+                  class="donut-svg"
+                  width="220"
+                  height="220"
+                  viewBox="0 0 220 220"
+                >
+                  <circle
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#2E2E2E"
+                    stroke-width="26"
+                  />
+                  <circle
+                    id="circle-food"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#3DBD8A"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-transport"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#4B9CD3"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-entertainment"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#E8A838"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-education"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#9B59B6"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-health"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#F1948A"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-shopping"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#F39C12"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-cafe"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#A1887F"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                  <circle
+                    id="circle-other"
+                    cx="110"
+                    cy="110"
+                    r="85"
+                    fill="none"
+                    stroke="#E05A4E"
+                    stroke-width="26"
+                    stroke-dasharray="0 534.07"
+                    stroke-dashoffset="0"
+                    transform="rotate(-90 110 110)"
+                  />
+                </svg>
+                <div class="donut-legend">
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #3dbd8a; box-shadow: 0 0 8px #3dbd8a"
+                    ></div>
+                    Food
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #4b9cd3; box-shadow: 0 0 8px #4b9cd3"
+                    ></div>
+                    Transport
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #e8a838; box-shadow: 0 0 8px #e8a838"
+                    ></div>
+                    Entertainment
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #9b59b6; box-shadow: 0 0 8px #9b59b6"
+                    ></div>
+                    Education
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #f1948a; box-shadow: 0 0 8px #f1948a"
+                    ></div>
+                    Health
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #f39c12; box-shadow: 0 0 8px #f39c12"
+                    ></div>
+                    Shopping
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #a1887f; box-shadow: 0 0 8px #a1887f"
+                    ></div>
+                    Cafe
+                  </div>
+                  <div class="legend-item">
+                    <div
+                      class="legend-dot"
+                      style="background: #e05a4e; box-shadow: 0 0 8px #e05a4e"
+                    ></div>
+                    Other
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card recent-tx-card">
+              <div class="card-title">Recent transactions</div>
+              <div id="recent-tx-list">
+                <p
+                  style="
+                    color: var(--text-muted);
+                    font-size: 13px;
+                    text-align: center;
+                    padding: 20px 0;
+                  "
+                >
+                  No transactions yet.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <button class="log-btn-bar" onclick="navigateTo('log')">
+            + Log new expense
+          </button>
+        </section>
+
+        <section id="log" class="screen hidden">
+          <header>
+            <h1>Log expense</h1>
+            <p class="subtitle">Track a new purchase.</p>
+          </header>
+          <form id="log-form" class="dark-form">
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
+            >
+              <div class="form-group">
+                <label>Amount (EGP)</label>
+                <input
+                  type="number"
+                  id="expense-amount"
+                  placeholder="0"
+                  step="1"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Note (optional)</label>
+                <input
+                  type="text"
+                  id="expense-note"
+                  placeholder="e.g. Lunch at uni cafeteria"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <div
+                class="category-grid"
+                id="cat-grid"
+                style="grid-template-columns: repeat(8, 1fr)"
+              >
+                <button
+                  type="button"
+                  class="cat-btn selected"
+                  data-value="food"
+                >
+                  <span class="cat-icon">🍕</span>Food
+                </button>
+                <button type="button" class="cat-btn" data-value="transport">
+                  <span class="cat-icon">🚌</span>Transport
+                </button>
+                <button
+                  type="button"
+                  class="cat-btn"
+                  data-value="entertainment"
+                >
+                  <span class="cat-icon">🎬</span>Entertain.
+                </button>
+                <button type="button" class="cat-btn" data-value="education">
+                  <span class="cat-icon">📚</span>Education
+                </button>
+                <button type="button" class="cat-btn" data-value="health">
+                  <span class="cat-icon">💊</span>Health
+                </button>
+                <button type="button" class="cat-btn" data-value="shopping">
+                  <span class="cat-icon">🛍️</span>Shopping
+                </button>
+                <button type="button" class="cat-btn" data-value="cafe">
+                  <span class="cat-icon">☕</span>Cafe
+                </button>
+                <button type="button" class="cat-btn" data-value="other">
+                  <span class="cat-icon">···</span>Other
+                </button>
+              </div>
+              <input type="hidden" id="expense-category" value="food" />
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 8px">
+              <button
+                type="button"
+                class="btn-ghost"
+                style="flex: 1"
+                onclick="navigateTo('dashboard')"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn-primary" style="flex: 1">
+                Save expense ✓
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="history" class="screen hidden">
+          <header>
+            <h1>History</h1>
+            <p class="subtitle">Review and edit past logs.</p>
+          </header>
+          <div class="filter-row">
+            <select style="flex: 1">
+              <option>All categories</option>
+              <option>Food</option>
+              <option>Transport</option>
+              <option>Entertainment</option>
+              <option>Education</option>
+              <option>Health</option>
+              <option>Shopping</option>
+              <option>Cafe</option>
+            </select>
+            <select style="flex: 1">
+              <option>All dates</option>
+              <option>Today</option>
+              <option>This week</option>
+              <option>This month</option>
+            </select>
+            <button class="filter-btn">Apply</button>
+          </div>
+
+          <div id="transaction-list">
+            <p
+              style="
+                color: var(--text-muted);
+                text-align: center;
+                margin-top: 40px;
+              "
+            >
+              Your history is empty.
+            </p>
+          </div>
+        </section>
+
+        <section id="setup" class="screen hidden">
+          <div style="max-width: 700px; margin: 6vh auto 0">
+            <h1 style="font-size: 32px; margin-bottom: 8px; text-align: center">
+              Initialize your budget
+            </h1>
+            <p class="subtitle" style="text-align: center; margin-bottom: 36px">
+              Set your allowance and cycle duration to get started
+            </p>
+            <form id="setup-form" class="dark-form">
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px"
+              >
+                <div class="form-group">
+                  <label>Total allowance (EGP)</label>
+                  <input
+                    type="number"
+                    id="allowance"
+                    placeholder="e.g. 3000"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Cycle name (optional)</label>
+                  <input
+                    type="text"
+                    id="cycle-name"
+                    placeholder="e.g. May budget"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Start date</label>
+                  <input type="date" id="start-date" required />
+                </div>
+                <div class="form-group">
+                  <label>End date</label>
+                  <input type="date" id="end-date" required />
+                </div>
+              </div>
+              <button type="submit" class="btn-primary" style="margin-top: 8px">
+                Start cycle →
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section id="settings" class="screen hidden">
+          <header>
+            <h1>Settings</h1>
+            <p class="subtitle">Manage your account and preferences.</p>
+          </header>
+
+          <div class="settings-section">
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label" id="settings-cycle-name">
+                  No active cycle
+                </div>
+                <div class="settings-row-sub" id="settings-cycle-details">
+                  Set up a budget to see details
+                </div>
+              </div>
+              <span
+                class="badge"
+                id="settings-cycle-badge"
+                style="display: none"
+                >Active</span
+              >
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Manage categories</div>
+                <div class="settings-row-sub">
+                  Add or rename expense categories
+                </div>
+              </div>
+              <button
+                class="btn-ghost"
+                style="padding: 9px 16px; font-size: 13px"
+              >
+                Manage
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Reset current cycle</div>
+                <div class="settings-row-sub">
+                  Delete all logs and start fresh
+                </div>
+              </div>
+              <button id="reset-cycle-btn" class="btn-danger">Reset</button>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Profile picture</div>
+                <div class="settings-row-sub">Upload a new avatar</div>
+              </div>
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                style="display: none"
+              />
+              <button
+                class="btn-ghost"
+                style="padding: 9px 16px; font-size: 13px"
+                onclick="document.getElementById('avatar-upload').click()"
+              >
+                Upload
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div style="flex: 1; margin-right: 16px">
+                <div class="settings-row-label">Change username</div>
+                <input
+                  type="text"
+                  id="settings-username"
+                  placeholder="Enter new username"
+                  style="
+                    margin-top: 8px;
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    background: var(--app-bg);
+                    max-width: 200px;
+                  "
+                />
+              </div>
+              <button
+                id="update-username-btn"
+                class="btn-ghost"
+                style="padding: 9px 16px; font-size: 13px"
+              >
+                Save
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Change password</div>
+                <div class="settings-row-sub">
+                  Update your login credentials
+                </div>
+              </div>
+              <button
+                class="btn-ghost"
+                style="padding: 9px 16px; font-size: 13px"
+              >
+                Change
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div style="flex: 1; margin-right: 16px">
+                <div class="settings-row-label">Alert threshold (%)</div>
+                <div class="settings-row-sub">
+                  Trigger warning at X% of budget
+                </div>
+                <input
+                  type="number"
+                  id="settings-warning-percent"
+                  placeholder="80"
+                  min="1"
+                  max="100"
+                  style="
+                    margin-top: 8px;
+                    padding: 8px 12px;
+                    font-size: 13px;
+                    background: var(--app-bg);
+                    width: 80px;
+                  "
+                />
+              </div>
+              <button
+                id="update-warning-btn"
+                class="btn-ghost"
+                style="padding: 9px 16px; font-size: 13px"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-footer">
+            <button class="btn-ghost" style="width: 100%; padding: 14px">
+              Export data (CSV)
+            </button>
+            <button
+              id="logout-btn"
+              style="
+                width: 100%;
+                padding: 14px;
+                background: transparent;
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                color: var(--danger-color);
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: inherit;
+              "
+            >
+              Log out
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <!-- Warning Modal Overlay -->
+    <div id="warning-modal-overlay" class="warning-modal-overlay hidden">
+      <div class="warning-modal">
+        <div class="warning-modal-icon" id="warning-modal-icon">⚠️</div>
+        <h2 class="warning-modal-title" id="warning-modal-title">
+          Budget Alert
+        </h2>
+        <p class="warning-modal-body" id="warning-modal-body"></p>
+        <button class="warning-modal-btn" id="warning-modal-ok">Got it</button>
+      </div>
+    </div>
+    <script src="apiHandling.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
