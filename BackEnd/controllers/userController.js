@@ -2,6 +2,7 @@ let User = require("../models/userSchema");
 let Cycle = require("../models/cycleSchema");
 let Transaction = require("../models/transactionSchema");
 let Spending = require("../models/spendingSchema");
+let Alert = require("../models/alertSchema");
 const appError = require("../utils/appError");
 const httpStatusText = require("../utils/httpStatusText");
 const asyncWrapper = require("../middlewares/asyncWrapper");
@@ -32,12 +33,17 @@ const register = asyncWrapper(async (req, res, next) => {
       password: hashed,
       pin: hashedPin,
     });
+    await user.save();
     const token = await generateToken({
       userName: user.userName,
       email: user.email,
       id: user._id,
+      avatar: user.avatar,
     });
-    await user.save();
+    const alert = new Alert({
+      userId: user._id,
+    });
+    await alert.save();
     res.json({ status: httpStatusText.SUCCESS, data: token });
   } else {
     const error = appError.create(
@@ -59,6 +65,7 @@ const login = asyncWrapper(async (req, res, next) => {
         userName: user.userName,
         email: user.email,
         id: user._id,
+        avatar: user.avatar,
       });
       res.json({ status: httpStatusText.SUCCESS, data: token });
     } else if (user) {
@@ -94,6 +101,7 @@ const fastLogin = asyncWrapper(async (req, res, next) => {
       userName: user.userName,
       email: user.email,
       id: user._id,
+      avatar: user.avatar,
     });
     res.json({ status: httpStatusText.SUCCESS, data: token });
   } else {
@@ -105,13 +113,11 @@ const fastLogin = asyncWrapper(async (req, res, next) => {
 const deleteUser = asyncWrapper(async (req, res, next) => {
   const user = await User.findById(req.currentUser.id);
   if (user) {
-    const cycle = await Cycle.findOne({ userId: user._id }); // Fixed user_id reference here
-    await User.deleteOne({ _id: user._id });
-    if (cycle) {
-      await Cycle.findByIdAndDelete(cycle._id);
-      await Transaction.deleteMany({ cycleId: cycle._id });
-      await Spending.deleteMany({ cycleId: cycle._id });
-    }
+    const cycle = await Cycle.findOne({ userId: user_id });
+    await User.deleteOne(user);
+    await Cycle.findByIdAndDelete(cycle._id);
+    await Transaction.deleteMany({ cycleId: cycle._id });
+    await Spending.deleteMany({ cycleId: cycle._id });
     res.json({ status: httpStatusText.SUCCESS, message: "Deleted" });
   } else {
     const error = appError.create("User Not Here", 401, httpStatusText.FAIL);
@@ -122,14 +128,46 @@ const deleteUser = asyncWrapper(async (req, res, next) => {
 const editUser = asyncWrapper(async (req, res, next) => {
   let user = await User.findById(req.currentUser.id);
   if (user) {
+    if (req.file != undefined) {
+      req.currentUser.avatar = req.file.filename;
+      user.avatar = req.file.filename;
+    } else {
+      delete req.body["avatar"];
+    }
     Object.assign(user, req.body);
+    Object.assign(req.currentUser, req.body);
+
     const token = await generateToken({
       userName: user.userName,
       email: user.email,
       id: user._id,
+      avatar: user.avatar,
     });
     await user.save();
     res.json({ status: httpStatusText.SUCCESS, data: token });
+  } else {
+    const error = appError.create("User Not Here", 400, httpStatusText.FAIL);
+    return next(error);
+  }
+});
+
+const changePassword = asyncWrapper(async (req, res, next) => {
+  const { newPassword, oldPassword } = req.body;
+  const user = await User.findById(req.currentUser.id);
+  if (user) {
+    const check = await bcrypt.compare(oldPassword, user.password);
+    if (check) {
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+      res.json({ status: httpStatusText.SUCCESS, message: "Password changed" });
+    } else {
+      const error = appError.create(
+        "Password is wrong",
+        401,
+        httpStatusText.FAIL,
+      );
+      return next(error);
+    }
   } else {
     const error = appError.create("User Not Here", 401, httpStatusText.FAIL);
     return next(error);
@@ -144,4 +182,5 @@ module.exports = {
   editUser,
   fastLogin,
   checkPin,
+  changePassword,
 };
